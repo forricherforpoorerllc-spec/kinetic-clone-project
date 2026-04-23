@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useOrder } from "./OrderContext";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import kineticLogo from "@/assets/kinetic-logo.png";
 
 export function Header() {
   const { openModal } = useOrder();
@@ -20,25 +21,8 @@ export function Header() {
 
       <header className="border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-3 sm:px-6 lg:px-8">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="relative h-10 w-10">
-              {/* Kinetic-style swirl logo */}
-              <svg viewBox="0 0 40 40" className="h-10 w-10" aria-hidden="true">
-                <defs>
-                  <linearGradient id="lg1" x1="0" x2="1" y1="0" y2="1">
-                    <stop offset="0" stopColor="#f5ff1e" />
-                    <stop offset="0.5" stopColor="#26b170" />
-                    <stop offset="1" stopColor="#931d69" />
-                  </linearGradient>
-                </defs>
-                <path d="M20 4 a16 16 0 1 1 -11.3 27.3" fill="none" stroke="url(#lg1)" strokeWidth="6" strokeLinecap="round" />
-                <circle cx="20" cy="20" r="4" fill="#0175ca" />
-              </svg>
-            </div>
-            <div className="leading-tight">
-              <div className="font-display text-xl font-black tracking-tight text-foreground">kinetic<span style={{ color: "var(--k-blue)" }}>.</span></div>
-              <div className="text-[10px] font-semibold text-muted-foreground -mt-0.5">Authorized Agent</div>
-            </div>
+          <Link to="/" className="flex items-center">
+            <img src={kineticLogo} alt="Kinetic Authorized Agent" className="h-12 w-auto md:h-14" />
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex">
