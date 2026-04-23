@@ -4,20 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
- */
-
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -59,23 +45,27 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --color-kinetic-blue: var(--kinetic-blue);
-  --color-kinetic-cyan: var(--kinetic-cyan);
-  --color-kinetic-green: var(--kinetic-green);
-  --color-kinetic-light-blue: var(--kinetic-light-blue);
-  --color-kinetic-gray: var(--kinetic-gray);
+  /* Kinetic brand */
+  --color-k-navy: var(--k-navy);
+  --color-k-navy-deep: var(--k-navy-deep);
+  --color-k-blue: var(--k-blue);
+  --color-k-cyan: var(--k-cyan);
+  --color-k-yellow: var(--k-yellow);
+  --color-k-green: var(--k-green);
+  --color-k-magenta: var(--k-magenta);
+  --color-k-plum: var(--k-plum);
   --font-sans: 'Inter', system-ui, sans-serif;
-  --font-display: 'Poppins', system-ui, sans-serif;
+  --font-display: 'Mulish', 'Inter', system-ui, sans-serif;
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 1rem;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.18 0.02 250);
+  --foreground: oklch(0.18 0.06 270);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.02 250);
+  --card-foreground: oklch(0.18 0.06 270);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.02 250);
+  --popover-foreground: oklch(0.18 0.06 270);
   /* Kinetic Blue #0175CA */
   --primary: oklch(0.575 0.165 245);
   --primary-foreground: oklch(1 0 0);
@@ -84,7 +74,7 @@
   --secondary-foreground: oklch(1 0 0);
   --muted: oklch(0.97 0.005 240);
   --muted-foreground: oklch(0.5 0.02 250);
-  /* Tree Frog Green #7FCC28 */
+  /* Tree Frog Green */
   --accent: oklch(0.78 0.20 130);
   --accent-foreground: oklch(0.2 0.05 130);
   --destructive: oklch(0.577 0.245 27.325);
@@ -92,16 +82,17 @@
   --border: oklch(0.92 0.01 240);
   --input: oklch(0.92 0.01 240);
   --ring: oklch(0.575 0.165 245);
-  /* Brand-specific tokens */
-  --kinetic-blue: oklch(0.575 0.165 245);
-  --kinetic-cyan: oklch(0.74 0.16 230);
-  --kinetic-green: oklch(0.78 0.20 130);
-  --kinetic-light-blue: oklch(0.82 0.10 230);
-  --kinetic-gray: oklch(0.68 0.01 240);
-  --gradient-hero: linear-gradient(135deg, oklch(0.575 0.165 245) 0%, oklch(0.74 0.16 230) 100%);
-  --gradient-accent: linear-gradient(135deg, oklch(0.78 0.20 130) 0%, oklch(0.74 0.16 230) 100%);
-  --shadow-brand: 0 20px 50px -15px color-mix(in oklab, oklch(0.575 0.165 245) 40%, transparent);
-  --shadow-card: 0 8px 30px -10px color-mix(in oklab, oklch(0.18 0.02 250) 15%, transparent);
+
+  /* Kinetic exact brand tokens */
+  --k-navy: #0a0f3d;          /* hero background dark navy */
+  --k-navy-deep: #060932;     /* even darker accents */
+  --k-blue: #0175ca;          /* Kinetic Blue */
+  --k-cyan: #00adef;          /* Process cyan / promo bar */
+  --k-yellow: #f5ff1e;        /* Electric yellow / price badge / CTA */
+  --k-green: #26b170;         /* Reliability green */
+  --k-magenta: #931d69;       /* Magenta / plum accent shape */
+  --k-plum: #7e1f5e;
+
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -115,6 +106,9 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+
+  --shadow-card: 0 8px 30px -10px rgba(10, 15, 61, 0.18);
+  --shadow-brand: 0 20px 50px -15px rgba(10, 15, 61, 0.35);
 }
 
 .dark {
@@ -126,30 +120,11 @@
   --popover-foreground: oklch(0.984 0.003 247.858);
   --primary: oklch(0.929 0.013 255.508);
   --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
   --muted: oklch(0.279 0.041 260.031);
   --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
 @layer base {
@@ -160,5 +135,36 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
   }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Diagonal magenta/green hero shape used on real Kinetic site */
+.k-hero-bg {
+  background-color: var(--k-navy);
+  position: relative;
+  overflow: hidden;
+}
+.k-hero-shape-magenta::before {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 55%;
+  background: var(--k-magenta);
+  clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+  z-index: 0;
+}
+.k-hero-shape-green::before {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 55%;
+  background: var(--k-green);
+  clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+  z-index: 0;
 }
