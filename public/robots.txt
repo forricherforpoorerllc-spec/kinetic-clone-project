@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Block query-string duplicates and thank-you pages from indexing noise
+Disallow: /*?*utm_
+Disallow: /*?*gclid=
+Disallow: /*?*fbclid=
+
+Sitemap: https://kineticfiber.example.com/sitemap.xml

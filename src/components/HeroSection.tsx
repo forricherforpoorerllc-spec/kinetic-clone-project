@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
-import { Check } from "lucide-react";
+import { Check, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useOrder } from "./OrderContext";
+import { useGeo } from "@/hooks/useGeo";
 
 type Props = {
   eyebrow?: string;
@@ -31,11 +32,17 @@ export function HeroSection({
   imageAlt,
   shape = "green",
   ctaPlan,
-  ctaLabel = "Check availability",
+  ctaLabel = "Claim my fiber deal",
   disclaimer = "*with AutoPay.",
 }: Props) {
   const { openModal } = useOrder();
+  const geo = useGeo();
   const shapeColor = shape === "green" ? "var(--k-green)" : "var(--k-magenta)";
+  const city = geo.loading
+    ? null
+    : geo.city && geo.regionCode
+      ? `${geo.city}, ${geo.regionCode}`
+      : geo.city || geo.region || "your area";
 
   return (
     <section className="relative overflow-hidden" style={{ background: "var(--k-navy)" }}>
@@ -59,6 +66,21 @@ export function HeroSection({
           <h1 className="mt-4 font-display text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
             {title}
           </h1>
+          {geo.loading ? (
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/60 backdrop-blur border border-white/20 animate-pulse">
+              <span className="h-2 w-2 rounded-full bg-white/40 flex-shrink-0" />
+              <span>Detecting your area…</span>
+            </div>
+          ) : (
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur border border-white/20">
+              <span className="relative flex h-2 w-2 flex-shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "var(--k-green)" }} />
+                <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: "var(--k-green)" }} />
+              </span>
+              <MapPin className="h-3.5 w-3.5 flex-shrink-0" style={{ color: "var(--k-yellow)" }} />
+              <span>Live offers in <strong className="font-bold text-white">{city}</strong></span>
+            </div>
+          )}
           <div className="mt-6 text-sm font-bold uppercase tracking-wider text-white/80">plans include:</div>
           <ul className="mt-3 space-y-2 text-white">
             {bullets.map((b) => (
@@ -71,7 +93,11 @@ export function HeroSection({
           <p className="mt-4 text-xs text-white/60">{disclaimer}</p>
 
           <div className="mt-6 max-w-md rounded-2xl p-3" style={{ background: "var(--k-yellow)" }}>
-            <div className="font-bold text-[var(--k-navy)] mb-2 px-1">Hurry, see if you qualify for special offers today!</div>
+            <div className="font-bold text-[var(--k-navy)] mb-2 px-1">
+              {city
+                ? `Special offers available for ${city} today — see if you qualify!`
+                : "Hurry, see if you qualify for special offers today!"}
+            </div>
             <Button
               onClick={() => openModal(ctaPlan)}
               className="w-full h-12 text-base font-extrabold text-white hover:opacity-90"

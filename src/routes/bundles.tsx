@@ -2,32 +2,46 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useOrder } from "@/components/OrderContext";
 import { HeroSection } from "@/components/HeroSection";
+import { FaqSection } from "@/components/FaqSection";
+import { useGeo, locationLabel } from "@/hooks/useGeo";
 import { Wifi, Phone, ShieldAlert, Voicemail, PhoneCall, Globe } from "lucide-react";
 import bundlesHero from "@/assets/bundles-hero.jpg";
 
 export const Route = createFileRoute("/bundles")({
   head: () => ({
     meta: [
-      { title: "Internet & Phone Bundles from $49.99/mo | Kinetic Bundles" },
-      { name: "description", content: "Bundle Kinetic Fiber Internet with crystal-clear home phone for just $49.99/mo. Unlimited nationwide calling, spam-call alerts, web portal management, no data caps. Order online today." },
-      { name: "keywords", content: "internet and phone bundle, Kinetic bundle, home phone service, bundle deals, double play bundle, internet voice bundle, bundle and save" },
+      { title: "Kinetic Internet + Phone Bundles | Save More Starting at $49.99/mo" },
+      { name: "description", content: "Bundle Kinetic Fiber Internet with unlimited home phone from $49.99/mo — one bill, real savings, spam-call blocking, no data caps, no annual contracts. Earn up to $300 prepaid Mastercard®. Order your bundle now." },
+      { name: "keywords", content: "internet and phone bundle, Kinetic bundle, home phone service, bundle deals, double play bundle, internet voice bundle, bundle and save, fiber phone bundle" },
       { property: "og:title", content: "Internet & Phone Bundles from $49.99/mo | Kinetic" },
       { property: "og:description", content: "Bundle internet + home phone for $49.99/mo. Unlimited calling, spam alerts, no contracts." },
+      { property: "og:url", content: "https://kineticfiber.example.com/bundles" },
     ],
+    links: [{ rel: "canonical", href: "https://kineticfiber.example.com/bundles" }],
   }),
   component: BundlesPage,
 });
 
+const bundleFaq = [
+  { q: "How much do I save with a Kinetic bundle?", a: "Bundle customers save up to $20 per month versus buying internet and home phone separately — that's up to $240/year back in your pocket, plus one simple bill." },
+  { q: "Is the home phone line a real landline?", a: "Kinetic home phone rides on our fiber network for crystal-clear HD voice with unlimited nationwide calling, caller ID, voicemail, premium call forwarding and spam-call alerts — all managed from an easy web portal." },
+  { q: "Can I keep my current phone number?", a: "Yes. During order we'll walk you through porting your existing number to Kinetic so you don't miss a single call." },
+  { q: "Does the bundle include data caps or long-term contracts?", a: "Never. Every Kinetic bundle includes unlimited data, no throttling and month-to-month flexibility — no annual contracts required." },
+  { q: "What's included with bundle install?", a: "One technician visit handles everything: fiber internet, Whole Home Wi-Fi walkthrough, home phone adapter and spam-call alert activation. Most bundle installs take 2–4 hours." },
+];
+
 function BundlesPage() {
   const { openModal } = useOrder();
+  const geo = useGeo();
+  const cityLabel = locationLabel(geo, "your neighborhood");
   return (
     <div>
       <HeroSection
         eyebrow="Bundle & save"
-        title={<>internet & phone<br />bundling for you.</>}
+        title={<>internet & phone bundles<br />one bill, real savings.</>}
         bullets={[
-          "No data caps",
-          "Spam call alert",
+          "Unlimited nationwide calling",
+          "Spam call alert & screening",
           "Web portal feature management",
           "One simple monthly bill",
         ]}
@@ -38,6 +52,7 @@ function BundlesPage() {
         imageAlt="Kinetic customer using bundled internet and home phone"
         shape="magenta"
         ctaPlan="Internet + Voice Bundle — $49.99/mo"
+        ctaLabel="Order my bundle"
       />
 
       {/* $300 promo strip */}
@@ -50,7 +65,7 @@ function BundlesPage() {
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="font-display text-3xl font-black sm:text-4xl">get the best in internet and voice.</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">One provider. One bill. Twice the value when you bundle Kinetic Fiber Internet with home phone.</p>
+          <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">One provider. One bill. Twice the value when you bundle Kinetic Fiber Internet with home phone{geo.city ? ` in ${geo.city}` : ""}.</p>
         </div>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
@@ -120,6 +135,24 @@ function BundlesPage() {
           <Button onClick={() => openModal("Internet + Voice Bundle — $49.99/mo")} className="mt-10 h-12 px-8 font-extrabold text-[var(--k-navy)] hover:opacity-90" style={{ background: "var(--k-yellow)" }}>Order my bundle</Button>
         </div>
       </section>
+
+      <FaqSection
+        heading="Bundles — frequently asked questions"
+        subhead={`Answers for homeowners and renters bundling Kinetic in ${cityLabel}.`}
+        items={bundleFaq}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://kineticfiber.example.com/" },
+            { "@type": "ListItem", position: 2, name: "Internet & Phone Bundles", item: "https://kineticfiber.example.com/bundles" },
+          ],
+        }) }}
+      />
     </div>
   );
 }
