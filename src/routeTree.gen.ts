@@ -9,8 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as HighSpeedInternetRouteImport } from './routes/high-speed-internet'
+import { Route as FiberInternetRouteImport } from './routes/fiber-internet'
+import { Route as BundlesRouteImport } from './routes/bundles'
 import { Route as IndexRouteImport } from './routes/index'
 
+const HighSpeedInternetRoute = HighSpeedInternetRouteImport.update({
+  id: '/high-speed-internet',
+  path: '/high-speed-internet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FiberInternetRoute = FiberInternetRouteImport.update({
+  id: '/fiber-internet',
+  path: '/fiber-internet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BundlesRoute = BundlesRouteImport.update({
+  id: '/bundles',
+  path: '/bundles',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +37,61 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/bundles': typeof BundlesRoute
+  '/fiber-internet': typeof FiberInternetRoute
+  '/high-speed-internet': typeof HighSpeedInternetRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/bundles': typeof BundlesRoute
+  '/fiber-internet': typeof FiberInternetRoute
+  '/high-speed-internet': typeof HighSpeedInternetRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/bundles': typeof BundlesRoute
+  '/fiber-internet': typeof FiberInternetRoute
+  '/high-speed-internet': typeof HighSpeedInternetRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/bundles' | '/fiber-internet' | '/high-speed-internet'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/bundles' | '/fiber-internet' | '/high-speed-internet'
+  id: '__root__' | '/' | '/bundles' | '/fiber-internet' | '/high-speed-internet'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BundlesRoute: typeof BundlesRoute
+  FiberInternetRoute: typeof FiberInternetRoute
+  HighSpeedInternetRoute: typeof HighSpeedInternetRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/high-speed-internet': {
+      id: '/high-speed-internet'
+      path: '/high-speed-internet'
+      fullPath: '/high-speed-internet'
+      preLoaderRoute: typeof HighSpeedInternetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fiber-internet': {
+      id: '/fiber-internet'
+      path: '/fiber-internet'
+      fullPath: '/fiber-internet'
+      preLoaderRoute: typeof FiberInternetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bundles': {
+      id: '/bundles'
+      path: '/bundles'
+      fullPath: '/bundles'
+      preLoaderRoute: typeof BundlesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +104,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BundlesRoute: BundlesRoute,
+  FiberInternetRoute: FiberInternetRoute,
+  HighSpeedInternetRoute: HighSpeedInternetRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,6 +1,11 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
+import { OrderProvider } from "@/components/OrderContext";
+import { OrderModal } from "@/components/OrderModal";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 function NotFoundComponent() {
   return (
@@ -12,12 +17,9 @@ function NotFoundComponent() {
           The page you're looking for doesn't exist or has been moved.
         </p>
         <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
+          <a href="/" className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
             Go home
-          </Link>
+          </a>
         </div>
       </div>
     </div>
@@ -29,21 +31,10 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { title: "Kinetic Fiber Internet" },
+      { name: "description", content: "Fast, friendly Kinetic Fiber Internet for every home." },
     ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -56,7 +47,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="font-sans">
         {children}
         <Scripts />
       </body>
@@ -65,5 +56,17 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return <Outlet />;
+  return (
+    <OrderProvider>
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <main className="flex-1">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
+      <OrderModal />
+      <Toaster richColors position="top-center" />
+    </OrderProvider>
+  );
 }
