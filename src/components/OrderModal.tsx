@@ -208,7 +208,7 @@ export function OrderModal() {
       toast.success("Order received — a specialist will call to confirm.");
     } catch (err) {
       setSubmitting(false);
-      toast.error("We couldn't submit right now. Please call 1-833-740-5365.");
+      toast.error("We couldn't submit right now. Please try again or contact us.");
       // eslint-disable-next-line no-console
       console.error("Order submission failed", err);
     }

@@ -36,7 +36,7 @@ const fiberFaq = [
   { q: "Are Kinetic Fiber upload speeds really the same as download?", a: "Yes. Every fiber plan — from 100 Mbps to 2 Gig — includes symmetrical speeds. A Kinetic 1 Gig plan uploads up to 1,000 Mbps, which is more than 25x faster than typical cable upload speeds." },
   { q: "Do I need to buy a router?", a: "No. Kinetic Fiber includes a Wi-Fi 6E or Wi-Fi 7 gateway at no extra cost with every install. Our technician tunes placement during the 20-point Whole Home Wi-Fi walkthrough." },
   { q: "What speed do I actually need?", a: "For 1–2 devices with basic browsing and HD streaming, 100 Mbps is plenty. For 4K streaming on multiple TVs, 300 Mbps is a sweet spot. Gamers and remote workers lean toward 1 Gig; smart homes with 20+ connected devices benefit from 2 Gig." },
-  { q: "Is Kinetic Fiber available at my address?", a: "We're rapidly expanding across 18 states and have passed more than 1.6 million homes. Enter your address when you order and we'll confirm serviceability, or call 1-833-740-5365 to talk to a local specialist." },
+  { q: "Is Kinetic Fiber available at my address?", a: "We're rapidly expanding across 18 states and have passed more than 1.6 million homes. Enter your address when you order and we'll confirm serviceability instantly." },
   { q: "How long is the price locked in?", a: "Most Kinetic Fiber plans include price-guarantee periods — 2 years on Fiber 2 Gig and 3 years on Fiber Max 2 Gig. No bait-and-switch promo pricing that balloons after 12 months." },
 ];
 

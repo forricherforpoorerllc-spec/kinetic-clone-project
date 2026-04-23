@@ -5,7 +5,7 @@ import { PlanCard } from "@/components/PlanCard";
 import { HeroSection } from "@/components/HeroSection";
 import { FaqSection } from "@/components/FaqSection";
 import { useGeo, locationLabel } from "@/hooks/useGeo";
-import { Award, ShieldCheck, Wifi, Headphones, MapPin, Zap, Star, Phone } from "lucide-react";
+import { Award, ShieldCheck, Wifi, Headphones, MapPin, Zap, Star } from "lucide-react";
 import heroFamily from "@/assets/hero-family.jpg";
 
 export const Route = createFileRoute("/")({
@@ -339,9 +339,6 @@ function HomePage() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <a href="tel:+18337405365" className="inline-flex h-11 items-center gap-2 rounded-md border border-border px-5 text-sm font-bold text-[var(--k-navy)] hover:bg-muted">
-              <Phone className="h-4 w-4" /> 1-833-740-5365
-            </a>
             <Button onClick={() => openModal()} className="h-11 px-6 font-extrabold text-[var(--k-navy)] hover:opacity-90" style={{ background: "var(--k-yellow)" }}>
               Order Kinetic Fiber
             </Button>

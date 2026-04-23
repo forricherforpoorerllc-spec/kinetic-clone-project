@@ -20,13 +20,7 @@ const organizationLd = {
     "Kinetic Fiber Internet delivers symmetrical 100% fiber-optic home internet up to 2 Gig with no data caps and no annual contracts, plus Whole Home Wi-Fi and 24/7 local support.",
   areaServed: "United States",
   serviceType: ["Fiber Internet", "Home Phone", "Internet & Voice Bundle"],
-  contactPoint: [{
-    "@type": "ContactPoint",
-    telephone: "+1-833-740-5365",
-    contactType: "sales",
-    areaServed: "US",
-    availableLanguage: ["English", "Spanish"],
-  }],
+  contactPoint: [],  
   sameAs: [] as string[],
 };
 
