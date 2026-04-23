@@ -25,6 +25,7 @@ const homePlans = [
   { name: "fiber 300 Mbps", speed: "300 Mbps download", price: "$39", cents: ".99", description: "Good for most day-to-day internet uses including streaming video.", features: ["Work, stream and play on multiple devices", "Download a 2.5-hour 4K movie in about 8 minutes", "Free expert installation"], planValue: "Fiber 300 Mbps — $39.99/mo" },
   { name: "fiber 1 gig", speed: "1,000 Mbps download", price: "$49", cents: ".99", description: "Boosted speed and capacity for working from home and gaming.", features: ["Plenty of bandwidth for mid-sized households", "More than 25x upload speeds compared to cable", "Lag-free competitive online gaming"], highlight: true, badge: "Most popular", rebate: "$100 prepaid Mastercard®", planValue: "Fiber 1 Gig — $49.99/mo" },
   { name: "fiber 2 gig", speed: "2,000 Mbps download", price: "$69", cents: ".99", description: "Ultra-fast speeds engineered for large smart homes.", features: ["Ideal for immersive 4K cloud gaming", "Supports dozens of devices simultaneously", "Wi-Fi 7 ready router included"], badge: "Best value", rebate: "$200 prepaid Mastercard® · 2-year price guarantee", planValue: "Fiber 2 Gig — $69.99/mo" },
+  { name: "fiber max 2 gig", speed: "2,000 Mbps + Secure", price: "$89", cents: ".99", description: "Worry-free internet for the whole home, bundled with security.", features: ["Includes eero Pro 7 Wi-Fi gateway", "Kinetic Secure Plus + extenders as needed", "24/7 always-on Premium Tech Support"], rebate: "$300 prepaid Mastercard® · 3-year price guarantee", planValue: "Fiber Max 2 Gig — $89.99/mo" },
 ];
 
 function HomePage() {
@@ -62,7 +63,7 @@ function HomePage() {
             Get the most advanced high-speed home internet at a great price, no matter what speed you choose.
           </p>
         </div>
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {homePlans.map((p) => <PlanCard key={p.name} plan={p} />)}
         </div>
         <p className="mt-8 text-center text-xs text-muted-foreground">*Price includes a $5.00/mo discount with AutoPay.</p>
