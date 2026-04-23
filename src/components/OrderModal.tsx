@@ -22,6 +22,7 @@ import { useOrder } from "./OrderContext";
 import { useGeo } from "@/hooks/useGeo";
 import {
   CheckCircle2,
+  ChevronDown,
   Loader2,
   ShieldCheck,
   Lock,
@@ -34,13 +35,13 @@ import { toast } from "sonner";
 // Paste your Google Apps Script Web App URL here:
 const ORDER_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKSw41_zq_jxO5o1pZNSEUh1Hkog9LFF94thPQUYXfBkdWCEF9eECpf0_yURtS1eHC/exec";
 
-const PLANS = [
-  "Fiber 100 Mbps — $24.99/mo",
-  "Fiber 300 Mbps — $39.99/mo",
-  "Fiber 1 Gig — $49.99/mo",
-  "Fiber 2 Gig — $69.99/mo",
-  "Fiber Max 2 Gig — $89.99/mo",
-  "Internet + Voice Bundle — $49.99/mo",
+const PLAN_OPTIONS = [
+  { value: "Fiber 100 Mbps — $24.99/mo", speed: "100 Mbps", name: "Fiber 100", price: "$24.99/mo", badge: null },
+  { value: "Fiber 300 Mbps — $39.99/mo", speed: "300 Mbps", name: "Fiber 300", price: "$39.99/mo", badge: "Popular" },
+  { value: "Fiber 1 Gig — $49.99/mo", speed: "1 Gig", name: "Fiber 1 Gig", price: "$49.99/mo", badge: "Best Value" },
+  { value: "Fiber 2 Gig — $69.99/mo", speed: "2 Gig", name: "Fiber 2 Gig", price: "$69.99/mo", badge: null },
+  { value: "Fiber Max 2 Gig — $89.99/mo", speed: "2 Gig Max", name: "Fiber Max", price: "$89.99/mo", badge: "Fastest" },
+  { value: "Internet + Voice Bundle — $49.99/mo", speed: "Bundle", name: "Internet + Voice", price: "$49.99/mo", badge: null },
 ];
 
 const ADD_ONS = [
@@ -86,10 +87,17 @@ export function OrderModal() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [planValue, setPlanValue] = useState(selectedPlan || "");
+  const [addOnsOpen, setAddOnsOpen] = useState(false);
   const [addOns, setAddOns] = useState<string[]>(["Whole Home Wi-Fi (free)"]);
   const [movedInLastYear, setMovedInLastYear] = useState(false);
   const [ssnFocused, setSsnFocused] = useState(false);
   const [installTime, setInstallTime] = useState("");
+
+  // Sync plan when modal opens with a pre-selected plan.
+  useEffect(() => {
+    if (open && selectedPlan) setPlanValue(selectedPlan);
+  }, [open, selectedPlan]);
 
   // Prefill city/zip from geo once, when modal opens.
   useEffect(() => {
@@ -211,6 +219,8 @@ export function OrderModal() {
     setTimeout(() => {
       setSubmitted(false);
       setErrors({});
+      setPlanValue(selectedPlan || "");
+      setAddOnsOpen(false);
       setAddOns(["Whole Home Wi-Fi (free)"]);
       setMovedInLastYear(false);
       setInstallTime("");
@@ -227,8 +237,8 @@ export function OrderModal() {
             <CheckCircle2 className="mx-auto h-16 w-16" style={{ color: "var(--k-green)" }} />
             <h3 className="mt-4 font-display text-2xl font-bold text-foreground">Order received!</h3>
             <p className="mt-2 text-muted-foreground">
-              Thank you for choosing Kinetic. A fiber specialist will call within 1 business day to
-              confirm your install{geo.city ? ` in ${geo.city}` : ""}.
+              Thank you for choosing Kinetic. A fiber specialist will call soon to confirm your
+              install{geo.city ? ` in ${geo.city}` : ""}.
             </p>
             <Button
               onClick={handleClose}
@@ -274,26 +284,77 @@ export function OrderModal() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5 bg-white px-6 pb-6 pt-5">
-              {/* PLAN */}
+              {/* PLAN CARDS */}
               <div>
-                <Label htmlFor="plan" className="text-sm font-semibold text-foreground">Plan *</Label>
-                <Select name="plan" defaultValue={selectedPlan}>
-                  <SelectTrigger className="mt-1 border-border bg-white text-foreground">
-                    <SelectValue placeholder="Choose your plan" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border border-border shadow-xl z-[200]">
-                    {PLANS.map((p) => (
-                      <SelectItem
-                        key={p}
-                        value={p}
-                        className="text-gray-900 focus:bg-[var(--k-blue)] focus:text-white cursor-pointer"
+                <Label className="text-sm font-semibold text-slate-900">Choose Your Plan *</Label>
+                <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {PLAN_OPTIONS.map((p) => {
+                    const isSelected = planValue === p.value;
+                    return (
+                      <button
+                        key={p.value}
+                        type="button"
+                        onClick={() => setPlanValue(p.value)}
+                        className={`relative flex flex-col rounded-xl border-2 p-3 text-left transition-all focus:outline-none ${
+                          isSelected
+                            ? "border-[var(--k-blue)] bg-[var(--k-blue)]/5 shadow-md"
+                            : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
+                        }`}
                       >
-                        {p}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                        {p.badge && (
+                          <span
+                            className="absolute -top-2.5 right-3 rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide text-white"
+                            style={{ background: "var(--k-blue)" }}
+                          >
+                            {p.badge}
+                          </span>
+                        )}
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{p.speed}</span>
+                        <span className="mt-0.5 text-sm font-bold text-slate-900 leading-tight">{p.name}</span>
+                        <span className="mt-1.5 text-base font-black" style={{ color: "var(--k-blue)" }}>{p.price}</span>
+                        {isSelected && (
+                          <CheckCircle2 className="absolute right-2 top-2 h-4 w-4" style={{ color: "var(--k-blue)" }} />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                <input type="hidden" name="plan" value={planValue} />
                 {errors.plan && <p className="mt-1 text-xs text-destructive">{errors.plan}</p>}
+              </div>
+
+              {/* ADD-ONS (collapsed, right below plan) */}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setAddOnsOpen((o) => !o)}
+                  className="flex w-full items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100"
+                >
+                  <span>Add-Ons <span className="font-normal text-slate-500">(optional)</span></span>
+                  <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${addOnsOpen ? "rotate-180" : ""}`} />
+                </button>
+                {addOnsOpen && (
+                  <div className="mt-1.5 grid grid-cols-1 gap-1.5 rounded-lg border border-border bg-muted/40 p-3 sm:grid-cols-2">
+                    {ADD_ONS.map((a) => {
+                      const id = `addon-${a}`;
+                      const checked = addOns.includes(a);
+                      return (
+                        <label
+                          key={a}
+                          htmlFor={id}
+                          className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${
+                            checked
+                              ? "border-[var(--k-blue)] bg-[var(--k-blue)]/5 text-slate-900"
+                              : "border-transparent text-slate-600 hover:bg-background"
+                          }`}
+                        >
+                          <Checkbox id={id} checked={checked} onCheckedChange={() => toggleAddOn(a)} />
+                          <span>{a}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* NAME */}
@@ -316,9 +377,9 @@ export function OrderModal() {
                   <Field label="City" name="city" error={errors.city} autoComplete="address-level2" required />
                 </div>
                 <div className="col-span-1">
-                  <Label htmlFor="state" className="text-sm font-semibold text-foreground">State *</Label>
+                  <Label htmlFor="state" className="text-sm font-semibold text-slate-900">State *</Label>
                   <Select name="state" defaultValue={defaultState}>
-                    <SelectTrigger className="mt-1 border-border bg-white text-foreground">
+                    <SelectTrigger className="mt-1 border-border bg-white text-slate-900">
                       <SelectValue placeholder="ST" />
                     </SelectTrigger>
                     <SelectContent className="bg-white border border-border shadow-xl z-[200]">
@@ -363,9 +424,9 @@ export function OrderModal() {
                   min={minInstall}
                 />
                 <div>
-                  <Label className="text-sm font-semibold text-foreground">Preferred Time</Label>
+                  <Label className="text-sm font-semibold text-slate-900">Preferred Time</Label>
                   <Select value={installTime} onValueChange={setInstallTime}>
-                    <SelectTrigger className="mt-1 border-border bg-white text-foreground">
+                    <SelectTrigger className="mt-1 border-border bg-white text-slate-900">
                       <SelectValue placeholder="Any time" />
                     </SelectTrigger>
                     <SelectContent className="bg-white border border-border shadow-xl z-[200]">
@@ -374,35 +435,6 @@ export function OrderModal() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-              </div>
-
-              {/* ADD-ONS */}
-              <div>
-                <Label className="text-sm font-semibold text-foreground">Add-Ons (optional)</Label>
-                <div className="mt-2 grid grid-cols-1 gap-2 rounded-lg border border-border bg-muted/40 p-3 sm:grid-cols-2">
-                  {ADD_ONS.map((a) => {
-                    const id = `addon-${a}`;
-                    const checked = addOns.includes(a);
-                    return (
-                      <label
-                        key={a}
-                        htmlFor={id}
-                        className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${
-                          checked
-                            ? "border-[var(--k-blue)] bg-[var(--k-blue)]/5 text-foreground"
-                            : "border-transparent text-muted-foreground hover:bg-background"
-                        }`}
-                      >
-                        <Checkbox
-                          id={id}
-                          checked={checked}
-                          onCheckedChange={() => toggleAddOn(a)}
-                        />
-                        <span>{a}</span>
-                      </label>
-                    );
-                  })}
                 </div>
               </div>
 
@@ -429,9 +461,9 @@ export function OrderModal() {
                         <Field label="City" name="previousCity" />
                       </div>
                       <div className="col-span-1">
-                        <Label htmlFor="previousState" className="text-sm font-semibold text-foreground">State</Label>
+                        <Label htmlFor="previousState" className="text-sm font-semibold text-slate-900">State</Label>
                         <Select name="previousState">
-                          <SelectTrigger className="mt-1 border-border bg-white text-foreground">
+                          <SelectTrigger className="mt-1 border-border bg-white text-slate-900">
                             <SelectValue placeholder="ST" />
                           </SelectTrigger>
                           <SelectContent className="bg-white border border-border shadow-xl z-[200]">
@@ -497,7 +529,7 @@ export function OrderModal() {
                 <div className="grid grid-cols-2 gap-4 px-4 py-4 bg-white rounded-b-xl">
                   {/* DOB — left */}
                   <div>
-                    <Label htmlFor="dob" className="text-sm font-semibold text-foreground">Date of Birth *</Label>
+                    <Label htmlFor="dob" className="text-sm font-semibold text-slate-900">Date of Birth *</Label>
                     <p className="mt-0.5 text-[11px] text-muted-foreground">MM/DD/YYYY</p>
                     <Input
                       id="dob"
@@ -515,7 +547,7 @@ export function OrderModal() {
                   </div>
                   {/* SSN — right */}
                   <div>
-                    <Label htmlFor="ssn" className="text-sm font-semibold text-foreground">Social Security Number *</Label>
+                    <Label htmlFor="ssn" className="text-sm font-semibold text-slate-900">Social Security Number *</Label>
                     <p className="mt-0.5 text-[11px] text-muted-foreground">Never stored on this device</p>
                     <div className="relative mt-1">
                       <Input
@@ -579,7 +611,7 @@ type FieldProps = {
 function Field({ label, name, type = "text", error, required, ...rest }: FieldProps) {
   return (
     <div>
-      <Label htmlFor={name} className="text-sm font-semibold text-foreground">{label}{required && " *"}</Label>
+      <Label htmlFor={name} className="text-sm font-semibold text-slate-900">{label}{required && " *"}</Label>
       <Input id={name} name={name} type={type} required={required} className="mt-1 bg-white text-gray-900 border-slate-300" {...rest} />
       {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
     </div>
