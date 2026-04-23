@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Phone, Mail, MapPin } from "lucide-react";
+import kineticLogo from "@/assets/kinetic-logo.png";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -8,19 +9,8 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
           <div>
-            <div className="flex items-center gap-2">
-              <svg viewBox="0 0 40 40" className="h-10 w-10" aria-hidden="true">
-                <defs>
-                  <linearGradient id="lgf" x1="0" x2="1" y1="0" y2="1">
-                    <stop offset="0" stopColor="#f5ff1e" />
-                    <stop offset="0.5" stopColor="#26b170" />
-                    <stop offset="1" stopColor="#931d69" />
-                  </linearGradient>
-                </defs>
-                <path d="M20 4 a16 16 0 1 1 -11.3 27.3" fill="none" stroke="url(#lgf)" strokeWidth="6" strokeLinecap="round" />
-                <circle cx="20" cy="20" r="4" fill="#00adef" />
-              </svg>
-              <span className="font-display text-xl font-black">kinetic.</span>
+            <div className="rounded-xl bg-white p-3 inline-block">
+              <img src={kineticLogo} alt="Kinetic Authorized Agent" className="h-12 w-auto" />
             </div>
             <p className="mt-4 text-sm text-white/70">
               Fast, friendly fiber internet for over 1.6 million homes across 18 states. No data caps. No annual contracts.

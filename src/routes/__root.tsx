@@ -34,7 +34,10 @@ export const Route = createRootRoute({
       { title: "Kinetic Fiber Internet" },
       { name: "description", content: "Fast, friendly Kinetic Fiber Internet for every home." },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/png", href: "/favicon.png" },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
