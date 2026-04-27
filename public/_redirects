@@ -1,1 +1,1 @@
-# Intentionally empty — SPA fallback is configured in netlify.toml.
+# Intentionally empty — TanStack Start's Netlify Function handles all routing.

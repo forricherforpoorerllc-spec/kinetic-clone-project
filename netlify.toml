@@ -2,8 +2,8 @@
   command   = "bun run build"
   publish   = "dist/client"
 
-# TanStack Start SPA mode emits dist/client/_shell.html — every route falls back
-# to it so the client router can hydrate and render the requested page.
+# SPA fallback — every request gets the prerendered shell so TanStack Router
+# can hydrate and handle routing entirely on the client.
 [[redirects]]
   from   = "/*"
   to     = "/_shell.html"
