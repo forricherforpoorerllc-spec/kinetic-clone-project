@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import {
   Dialog,
@@ -118,11 +118,6 @@ export function OrderModal() {
     if (cityEl && !cityEl.value && geo.city) cityEl.value = geo.city;
     if (zipEl && !zipEl.value && geo.postal) zipEl.value = geo.postal;
   }, [open, geo]);
-
-  const defaultState = useMemo(() => {
-    if (geo.regionCode && STATES.includes(geo.regionCode)) return geo.regionCode;
-    return undefined;
-  }, [geo.regionCode]);
 
   const formatDOB = (v: string) => {
     const digits = v.replace(/\D/g, "").slice(0, 8);
@@ -405,7 +400,7 @@ export function OrderModal() {
                 </div>
                 <div className="col-span-1">
                   <Label htmlFor="state" className="text-sm font-semibold text-slate-900">State *</Label>
-                  <Select name="state" defaultValue={defaultState}>
+                  <Select name="state">
                     <SelectTrigger className="mt-1 border-border bg-white text-slate-900">
                       <SelectValue placeholder="ST" />
                     </SelectTrigger>
