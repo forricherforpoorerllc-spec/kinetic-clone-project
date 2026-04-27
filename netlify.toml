@@ -2,7 +2,6 @@
   command   = "bun run build"
   publish   = "dist/client"
 
-[[redirects]]
-  from   = "/*"
-  to     = "/index.html"
-  status = 200
+# TanStack Start with target: "netlify" generates a Netlify Function that
+# handles SSR + routing. Netlify auto-detects functions in .netlify/functions-internal/
+# so no manual redirect is needed — the function intercepts every path.
