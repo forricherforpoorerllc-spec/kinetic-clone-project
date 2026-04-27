@@ -2,6 +2,9 @@
   command   = "bun run build"
   publish   = "dist/client"
 
-# TanStack Start with target: "netlify" generates a Netlify Function that
-# handles SSR + routing. Netlify auto-detects functions in .netlify/functions-internal/
-# so no manual redirect is needed — the function intercepts every path.
+# TanStack Start SPA mode emits dist/client/_shell.html — every route falls back
+# to it so the client router can hydrate and render the requested page.
+[[redirects]]
+  from   = "/*"
+  to     = "/_shell.html"
+  status = 200

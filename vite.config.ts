@@ -1,22 +1,12 @@
-import { defineConfig } from "vite";
-import { tanstackStart } from "@tanstack/react-start/plugin/vite";
-import viteReact from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
-import tsConfigPaths from "vite-tsconfig-paths";
+// @lovable.dev/vite-tanstack-config bundles the Cloudflare Worker plugin by default,
+// which is incompatible with a Netlify static deploy. We disable it and turn on
+// TanStack Start's SPA mode so the build emits a prerendered _shell.html the
+// client router can hydrate from. Local `vite dev` is unaffected.
+import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-// Replaces @lovable.dev/vite-tanstack-config so we can target Netlify.
-// TanStack Start with target: "netlify" emits:
-//   - dist/client/  → static assets + index.html shell
-//   - a Netlify Function for SSR (auto-wired via netlify.toml)
 export default defineConfig({
-  resolve: {
-    alias: { "@": "/src" },
-    dedupe: ["react", "react-dom", "@tanstack/react-router", "@tanstack/react-start"],
+  cloudflare: false,
+  tanstackStart: {
+    spa: { enabled: true },
   },
-  plugins: [
-    tsConfigPaths({ projects: ["./tsconfig.json"] }),
-    tailwindcss(),
-    tanstackStart({ target: "netlify" }),
-    viteReact(),
-  ],
 });
