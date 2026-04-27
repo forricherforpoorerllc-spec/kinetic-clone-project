@@ -1,10 +1,20 @@
 [build]
-  command   = "bun run build"
-  publish   = "dist/client"
+  base = "."
+  command = "bun run build"
+  publish = "dist/client"
+
+[context.production]
+  command = "bun run build"
+
+[context.deploy-preview]
+  command = "bun run build"
+
+[context.branch-deploy]
+  command = "bun run build"
 
 # SPA fallback — every request gets the prerendered shell so TanStack Router
 # can hydrate and handle routing entirely on the client.
 [[redirects]]
-  from   = "/*"
-  to     = "/_shell.html"
+  from = "/*"
+  to = "/_shell.html"
   status = 200
