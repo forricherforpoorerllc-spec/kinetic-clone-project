@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import {
   Dialog,
@@ -18,9 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useOrder } from "./OrderContext";
-import { useGeo } from "@/hooks/useGeo";
+import { useGeo, resolveIpGeoLocation } from "@/hooks/useGeo";
 import {
+  CalendarIcon,
   CheckCircle2,
   ChevronDown,
   Loader2,
@@ -32,8 +35,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-// Paste your Google Apps Script Web App URL here:
-const ORDER_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKSw41_zq_jxO5o1pZNSEUh1Hkog9LFF94thPQUYXfBkdWCEF9eECpf0_yURtS1eHC/exec";
+const ORDER_ENDPOINT = "https://script.google.com/macros/s/AKfycbxgjZBh-PtY340Ofj6rLEbmB35CrwLl7HrBNUwfTrii1bf2nXkuZJFUdQ2n6N24RYrI/exec";
 
 const PLAN_OPTIONS = [
   { value: "Fiber 100 Mbps — $24.99/mo", speed: "100 Mbps", name: "Fiber 100", price: "$24.99/mo", badge: null },
@@ -84,6 +86,7 @@ type FormErrors = Record<string, string>;
 export function OrderModal() {
   const { open, closeModal, selectedPlan } = useOrder();
   const geo = useGeo();
+  const ipGeoPromiseRef = useRef<Promise<string> | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -93,11 +96,19 @@ export function OrderModal() {
   const [movedInLastYear, setMovedInLastYear] = useState(false);
   const [ssnFocused, setSsnFocused] = useState(false);
   const [installTime, setInstallTime] = useState("");
+  const [installDate, setInstallDate] = useState<Date | undefined>(undefined);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   // Sync plan when modal opens with a pre-selected plan.
   useEffect(() => {
     if (open && selectedPlan) setPlanValue(selectedPlan);
   }, [open, selectedPlan]);
+
+  // Kick off IP geo lookup as soon as the modal opens so it's ready by submit.
+  useEffect(() => {
+    if (!open) return;
+    ipGeoPromiseRef.current = resolveIpGeoLocation();
+  }, [open]);
 
   // Prefill city/zip from geo once, when modal opens.
   useEffect(() => {
@@ -174,6 +185,14 @@ export function OrderModal() {
     setErrors({});
     setSubmitting(true);
 
+    let geoLocation = "";
+    if (ipGeoPromiseRef.current) {
+      geoLocation = await Promise.race<string>([
+        ipGeoPromiseRef.current,
+        new Promise<string>((r) => setTimeout(() => r(""), 3000)),
+      ]);
+    }
+
     const payload = {
       submittedAt: new Date().toISOString(),
       plan: result.data.plan,
@@ -199,6 +218,7 @@ export function OrderModal() {
       previousZip: movedInLastYear ? data.previousZip || "" : "",
       source: typeof window !== "undefined" ? window.location.href : "",
       userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "",
+      geoLocation,
     };
 
     try {
@@ -224,10 +244,17 @@ export function OrderModal() {
       setAddOns(["Whole Home Wi-Fi (free)"]);
       setMovedInLastYear(false);
       setInstallTime("");
+      setInstallDate(undefined);
+      setCalendarOpen(false);
     }, 300);
   };
 
-  const minInstall = new Date(Date.now() + 86400000).toISOString().split("T")[0];
+  // First available = 3 days from today; window closes 14 days after that (16 days total)
+  const minInstall = new Date(Date.now() + 3 * 86400000);
+  minInstall.setHours(0, 0, 0, 0);
+  const maxInstall = new Date(minInstall.getTime() + 13 * 86400000);
+  maxInstall.setHours(23, 59, 59, 999);
+  const minInstallStr = minInstall.toISOString().split("T")[0];
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
@@ -414,15 +441,70 @@ export function OrderModal() {
               </div>
 
               {/* INSTALL DATE + INSTALL TIME */}
+              {/* hidden input carries the value for zod/formData validation */}
+              <input
+                type="hidden"
+                name="preferredInstallDate"
+                value={installDate ? installDate.toISOString().split("T")[0] : ""}
+                readOnly
+              />
               <div className="grid grid-cols-2 gap-3">
-                <Field
-                  label="Preferred Install Date"
-                  name="preferredInstallDate"
-                  type="date"
-                  error={errors.preferredInstallDate}
-                  required
-                  min={minInstall}
-                />
+                <div>
+                  <Label className="text-sm font-semibold text-slate-900">
+                    Preferred Install Date <span className="text-destructive">*</span>
+                  </Label>
+                  <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className={[
+                          "mt-1 flex h-9 w-full items-center justify-between rounded-md border px-3 py-2 text-sm bg-white",
+                          installDate ? "text-slate-900" : "text-muted-foreground",
+                          errors.preferredInstallDate ? "border-destructive" : "border-border",
+                        ].join(" ")}
+                      >
+                        <span>
+                          {installDate
+                            ? installDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                            : "Pick a date"}
+                        </span>
+                        <CalendarIcon className="h-4 w-4 opacity-50" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 bg-white border border-border shadow-xl z-[200]" align="start">
+                      {/* Scoped styles — reliable fallback since Tailwind arbitrary selectors
+                          lose specificity battles against react-day-picker's own classes */}
+                      <style>{`
+                        .install-cal button { color: #1e293b !important; font-weight: 600; }
+                        .install-cal [class*="weekday"] { color: #334155 !important; font-weight: 700; }
+                        .install-cal [class*="caption"] { color: #0f172a !important; font-weight: 700; }
+                        .install-cal [data-disabled] button,
+                        .install-cal button:disabled { color: #94a3b8 !important; font-weight: 400; text-decoration: line-through; }
+                        .install-cal [class*="outside"] button { color: #cbd5e1 !important; }
+                        .install-cal [class*="today"] button { background: #f1f5f9 !important; color: #475569 !important; font-weight: 700; }
+                        .install-cal .rdp-available button { background: #2e7d32 !important; color: #fff !important; font-weight: 700; border-radius: 6px; }
+                        .install-cal .rdp-available button:hover { background: #1b5e20 !important; }
+                        .install-cal button[aria-selected="true"] { background: #1b5e20 !important; color: #fff !important; font-weight: 800 !important; }
+                      `}</style>
+                      <Calendar
+                        mode="single"
+                        selected={installDate}
+                        onSelect={(d) => { setInstallDate(d); setCalendarOpen(false); }}
+                        disabled={(d) => d < minInstall || d > maxInstall}
+                        defaultMonth={minInstall}
+                        modifiers={{ available: { from: minInstall, to: maxInstall } }}
+                        modifiersClassNames={{ available: "rdp-available" }}
+                        className="install-cal bg-white"
+                      />
+                      <p className="px-3 pb-2 text-[11px] text-muted-foreground">
+                        First available: {minInstall.toLocaleDateString("en-US", { month: "short", day: "numeric" })} — green dates are open
+                      </p>
+                    </PopoverContent>
+                  </Popover>
+                  {errors.preferredInstallDate && (
+                    <p className="mt-1 text-xs text-destructive">{errors.preferredInstallDate}</p>
+                  )}
+                </div>
                 <div>
                   <Label className="text-sm font-semibold text-slate-900">Preferred Time</Label>
                   <Select value={installTime} onValueChange={setInstallTime}>

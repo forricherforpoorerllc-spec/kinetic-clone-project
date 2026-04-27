@@ -92,7 +92,7 @@ function RootComponent() {
     <OrderProvider>
       <div className="flex min-h-screen flex-col">
         <Header />
-        <main className="flex-1">
+        <main className="flex-1 min-h-[100dvh]">
           <Outlet />
         </main>
         <Footer />

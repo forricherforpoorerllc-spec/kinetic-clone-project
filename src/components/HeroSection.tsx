@@ -125,6 +125,9 @@ export function HeroSection({
             alt={imageAlt}
             width={1536}
             height={1024}
+            fetchPriority="high"
+            loading="eager"
+            decoding="sync"
             className="relative z-10 rounded-2xl shadow-2xl"
           />
         </div>

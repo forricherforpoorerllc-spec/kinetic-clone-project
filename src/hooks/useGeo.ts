@@ -127,19 +127,24 @@ export function useGeo(): Geo {
   useEffect(() => {
     if (!geo.loading) return;
     let cancelled = false;
+    let timerId: ReturnType<typeof setTimeout>;
 
-    resolveGeo()
-      .then((data) => {
-        if (cancelled) return;
-        writeCache(data);
-        setGeo({ ...data, loading: false });
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setGeo({ ...DEFAULT_GEO, loading: false, error: "geo_failed" });
-      });
+    // Defer past first paint so geo network requests don't contend with LCP assets.
+    timerId = setTimeout(() => {
+      if (cancelled) return;
+      resolveGeo()
+        .then((data) => {
+          if (cancelled) return;
+          writeCache(data);
+          setGeo({ ...data, loading: false });
+        })
+        .catch(() => {
+          if (cancelled) return;
+          setGeo({ ...DEFAULT_GEO, loading: false, error: "geo_failed" });
+        });
+    }, 0);
 
-    return () => { cancelled = true; };
+    return () => { cancelled = true; clearTimeout(timerId); };
   }, [geo.loading]);
 
   return geo;
@@ -152,5 +157,48 @@ export function locationLabel(geo: Geo, fallback = "your neighborhood"): string 
   if (geo.city) return geo.city;
   if (geo.region) return geo.region;
   return fallback;
+}
+
+/**
+ * One-shot IP geo lookup that returns "City, State" (or best available).
+ * Tries three free APIs in order; each gets 3.5 s before moving on.
+ * Intended to be called once when the order modal opens so the result is
+ * ready (or nearly so) by the time the user hits submit.
+ */
+async function tryFetch(url: string): Promise<{ city: string; region: string }> {
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), 3500);
+  try {
+    const res = await fetch(url, { signal: ac.signal });
+    if (!res.ok) throw new Error(`${res.status}`);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const j: any = await res.json();
+    // Normalise across the three API shapes
+    const city = String(j.city || "").trim();
+    const region = String(j.region || j.region_name || "").trim();
+    if (!city && !region) throw new Error("empty");
+    return { city, region };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export async function resolveIpGeoLocation(): Promise<string> {
+  const apis = [
+    "https://ipwho.is/?fields=success,city,region",
+    "https://ipapi.co/json/",
+    "https://get.geojs.io/v1/ip/geo.json",
+  ];
+  for (const url of apis) {
+    try {
+      const { city, region } = await tryFetch(url);
+      if (city && region) return `${city}, ${region}`;
+      if (city) return city;
+      if (region) return region;
+    } catch {
+      // try next
+    }
+  }
+  return "";
 }
 
